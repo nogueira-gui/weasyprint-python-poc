@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            align-items: center;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .title {
+            text-align: center;
+        }
+
+        .date-amount {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .logo {
+            display: inline-block;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .date-amount {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .table {
+            margin-top: 20px;
+        }
+
+        .table-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+
+        .table-label {
+            font-weight: bold;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            color: #fff;
+            background-color: transparent;
+            height: 1px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="title">Recibo</h1>
+        <p>{{company.name}}</p>
+        <p>{{company.cnpj}}</p>
+        <p>{{company.address}}</p>
+        <p>{{company.phone}}</p>
+        <hr>
+        <div class="date-amount">
+            <div class="logo">
+                <img src="file://{{payment_method_image_path}}" alt="payment method image">
+                <p>{{payment_method}}</p>
+            </div>
+            <p>{{date}}</p>
+            <p>{{amount}}</p>
+        </div>
+        <div class="table">
+            <div class="table-row">
+                <span class="table-label">Nome:</span>
+                <span>{{client.name}}</span>
+            </div>
+            <div class="table-row">
+                <span class="table-label">Endereço:</span>
+                <span>{{client.address}}</span>
+            </div>
+            <div class="table-row">
+                <span class="table-label">Celular:</span>
+                <span>{{client.phone}}</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

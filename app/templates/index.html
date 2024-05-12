@@ -4,165 +4,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recibo</title>
+    <title>Editor HTML e JSON ao Vivo</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        #container {
+            display: flex;
+            height: 80vh;
             margin: 0;
             padding: 0;
+            overflow: hidden;
         }
-
-        .container {
-            align-items: center;
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .title {
-            text-align: center;
-        }
-
-        .date-amount {
+        #buttonContainer {
             display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
+            justify-content: center;
+            padding: 0.5em;
         }
 
-        .logo {
-            display: inline-block;
-            align-items: center;
+        #generatePdf {
+            padding: 0.5em 1em;
         }
 
-        .logo img {
-            width: 30px;
-            height: 30px;
+        #htmlEditor, #jsonEditor, #preview {
+            flex: 1;
+            padding: 1em;
+            box-sizing: border-box;
         }
 
-        .table {
-            margin-top: 20px;
+        #htmlEditor, #jsonEditor {
+            border-right: 1px solid #ccc;
         }
 
-        .table-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
+        #preview {
+            overflow: auto;
         }
 
-        .table-label {
-            font-weight: bold;
-        }
-
-        hr {
-            border: none;
-            border-top: 1px solid #ccc;
-            color: #fff;
-            background-color: transparent;
-            height: 1px;
+        textarea {
             width: 100%;
+            height: 80%;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1 class="title">Recibo</h1>
-        <form id="receiptForm">
-            <p>
-                <label for="companyName">Nome da Empresa:</label>
-                <input type="text" id="companyName" name="companyName" value="{{receipt.company.name}}">
-            </p>
-            <p>
-                <label for="companyCnpj">CNPJ da Empresa:</label>
-                <input type="text" id="companyCnpj" name="companyCnpj" value="{{receipt.company.cnpj}}">
-            </p>
-            <p>
-                <label for="companyAddress">Endereço da Empresa:</label>
-                <input type="text" id="companyAddress" name="companyAddress" value="{{receipt.company.address}}">
-            </p>
-            <p>
-                <label for="companyPhone">Telefone da Empresa:</label>
-                <input type="text" id="companyPhone" name="companyPhone" value="{{receipt.company.phone}}">
-            </p>
-            <hr>
-            <div class="date-amount">
-                <label>Forma de pagamento:</label>
-                <select name="paymentMethod" id="payment_method">
-                    <option value="dinheiro">Dinheiro</option>
-                    <option value="credito">Cartão de Crédito</option>
-                    <option value="debito">Cartão de Débito</option>
-                    <option value="pix">PIX</option>
-                </select>
-                <label for="date">Data:</label>
-                <input type="date" id="date" name="date" value="{{receipt.date}}">
-                <label for="amount">Valor:</label>
-                <input type="text" id="amount" name="amount" value="{{receipt.amount}}">
+    <form id="receipt">
+        <div id="container">
+            <div id="htmlEditor">
+                <h3>HTML Editor</h3>
+                <textarea name="htmlInput" id="htmlInput" oninput="updatePreview()">
+                    <!DOCTYPE html>
+                    <html lang="pt-BR">
+                    
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Page Title</title>
+                    </head>
+                    <body>
+                        <h1>Hello</h1>
+                        <p>{{name}}</p>
+                        <p>This is a testing tool</p>
+                    </body>
+                    </html>
+                </textarea>
             </div>
-            <div class="table">
-                <div class="table-row">
-                    <label for="clientName">Nome:</label>
-                    <input type="text" id="clientName" name="clientName" value="{{receipt.client.name}}">
-                </div>
-                <div class="table-row">
-                    <label for="clientAddress">Endereço:</label>
-                    <input type="text" id="clientAddress" name="clientAddress" value="{{receipt.client.address}}">
-                </div>
-                <div class="table-row">
-                    <label for="clientPhone">Celular:</label>
-                    <input type="text" id="clientPhone" name="clientPhone" value="{{receipt.client.phone}}">
-                </div>
+            <div id="jsonEditor">
+                <h3>JSON Editor</h3>
+                <textarea name="jsonInput" id="jsonInput" oninput="updatePreview()">{{ {"name":"your_name"} }}</textarea>
             </div>
-            <button type="submit">Exportar como PDF</button>
-        </form>
-    </div>
-    
+            <div id="preview">
+                <h3>Preview</h3>
+            </div>
+        </div>
+        <div id="buttonContainer">
+            <button type="submit" id="generatePdf">Gerar PDF</button>
+        </div>
+    </form>
+
     <script>
-        document.getElementById('receiptForm').addEventListener('submit', function(event) {
+        function updatePreview() {
+            var htmlInput = document.getElementById('htmlInput').value;
+            document.getElementById('preview').innerHTML = htmlInput;
+            console.log(jsonInput); // You can use the JSON input here
+        }
+        //send to POST method to /receipt
+        document.getElementById('receipt').addEventListener('submit', function(event) {
             event.preventDefault();
-
-            var formData = new FormData(this);
-            var jsonData = {};
-
-            for (var pair of formData.entries()) {
-                jsonData[pair[0]] = pair[1];
-            }
-
-            jsonData = {
-                company: {
-                    name: jsonData.companyName,
-                    cnpj: jsonData.companyCnpj,
-                    address: jsonData.companyAddress,
-                    phone: jsonData.companyPhone
-                },
-                payment_method: jsonData.paymentMethod,
-                date: jsonData.date,
-                amount: jsonData.amount,
-                client: {
-                    name: jsonData.clientName,
-                    address: jsonData.clientAddress,
-                    phone: jsonData.clientPhone
-                }
-            };
-
+            var htmlInput = document.getElementById('htmlInput').value;
+            var jsonInput = JSON.parse(document.getElementById('jsonInput').value);
+            console.log(jsonInput)
             fetch('/receipt', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(jsonData)
-            }).then(function(response) {
-                return response.blob();
-            }).then(function(blob) {
-                var url = window.URL.createObjectURL(blob);
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = `recibo-${Date.now()}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-            });
+                body: JSON.stringify({
+                    html: htmlInput,
+                    json: jsonInput
+                })
+            }).then(response => response.blob())
+            .then(blob => {
+                    const url = window.URL.createObjectURL(new Blob([blob]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'receipt.pdf');
+                    document.body.appendChild(link);
+                    link.click();
+                    link.parentNode.removeChild(link);
+                });
         });
     </script>
 </body>

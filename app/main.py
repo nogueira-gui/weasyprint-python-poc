@@ -1,13 +1,20 @@
 import json
-from flask import Flask, render_template
+from flask import Flask, logging, render_template
 from interfaces.controllers.receipt_controller import ReceiptController
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 receipt_controller = ReceiptController(app)
+
+if not app.debug:
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
 
 @app.route("/")
 def index():
-    receipt_json = '''{
+    default_json= '''{
         "company": {
             "name": "Nome da empresa LTDA",
             "cnpj": "68.640.441/0001-91",
@@ -23,7 +30,7 @@ def index():
         "date": "2024-05-12",
         "payment_method": "pix"
     }'''
-    return render_template("index.html", receipt=json.loads(receipt_json))
+    return render_template("index.html", receipt=json.loads(default_json))
 
 if __name__ == "__main__":
     print("Starting Flask server")

@@ -16,8 +16,6 @@ WORKDIR /app
 
 COPY app .
 
-COPY assets ./assets
-
 COPY requirements.txt .
 
 RUN pip install -r requirements.txt

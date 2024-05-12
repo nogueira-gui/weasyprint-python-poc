@@ -1,3 +1,4 @@
 weasyprint
 flask
 jinja2
+flask-cors
